@@ -11,9 +11,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Lock, Mail } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  LucidePhone,
+  Mail,
+  Phone,
+  PhoneIcon,
+} from "lucide-react";
 import { toast } from "sonner";
+import useDynamicMutation from "@/lib/api/use-post-data";
 
 const loginSchema = z.object({
   phoneNumber: z.string(),
@@ -23,13 +32,11 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/";
-  const error = searchParams.get("error");
+  const postMutation = useDynamicMutation({});
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [loginError, setLoginError] = useState("");
+  const error = searchParams.get("error");
 
   const {
     register,
@@ -46,33 +53,27 @@ export default function LoginPage() {
   }, [error]);
 
   const onSubmit = async (data: LoginForm) => {
-    setIsLoading(true);
-    setLoginError("");
-
     try {
-      const result = await signIn("credentials", {
-        phoneNumber: data.phoneNumber,
-        password: data.password,
-        redirect: false,
+      await postMutation.mutateAsync({
+        url: "auth/admin-login",
+        method: "POST",
+        headers: {},
+        body: {
+          phoneNumber: data.phoneNumber,
+          password: data.password,
+        },
+        onSuccess: async (res) => {
+          console.log("🚀 ~ onSubmit ~ res:", res);
+          toast.loading("Login Successful, Redirecting to home page...");
+
+          await signIn("credentials", {
+            data: JSON.stringify(res),
+            callbackUrl: "/",
+          });
+        },
       });
-
-      if (result?.error) {
-        setLoginError(result.error);
-        toast.error(result.error);
-        return;
-      }
-
-      if (result?.ok) {
-        toast.success("Login successful");
-        router.push(redirect);
-        // router.refresh();
-      }
-    } catch (err: any) {
-      console.error("Login error:", err);
-      setLoginError(err?.message || "Login failed. Please try again.");
-      toast.error("Login failed");
-    } finally {
-      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -92,23 +93,17 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {loginError && (
-              <Alert variant="destructive">
-                <AlertDescription>{loginError}</AlertDescription>
-              </Alert>
-            )}
-
             <div>
               <Label htmlFor="phoneNumber">Phone Number</Label>
               <div className="relative mt-1">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <LucidePhone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   id="phoneNumber"
                   type="phoneNumber"
                   placeholder="+251948261915"
                   {...register("phoneNumber")}
                   className="pl-10"
-                  disabled={isLoading}
+                  disabled={postMutation.isPending}
                 />
               </div>
               {errors.phoneNumber && (
@@ -123,13 +118,27 @@ export default function LoginPage() {
               <div className="relative mt-1">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
+                  key={showPassword ? "text" : "password"}
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   {...register("password")}
-                  className="pl-10"
-                  disabled={isLoading}
+                  className="pl-10 pr-10"
+                  disabled={postMutation.isPending}
                 />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
               {errors.password && (
                 <p className="text-sm text-red-600 mt-1">
@@ -138,8 +147,12 @@ export default function LoginPage() {
               )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={postMutation.isPending}
+            >
+              {postMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing in...

@@ -7,16 +7,7 @@ import { useAdminListings, useDeleteAdminListing } from "@/lib/hooks/use-admin";
 
 import useVehicleFilterStore from "@/lib/store/vehicle-filter.store";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { TableSearch } from "@/components/data-table/table-search";
@@ -24,6 +15,9 @@ import { TableSearch } from "@/components/data-table/table-search";
 import { AdminTable } from "@/components/data-table/data-table";
 import VehicleFilters from "./vehicle-filter";
 import { getVehicleColumns } from "./columns";
+import { UpdateStatusDialog } from "@/components/dialogs/update-status-dialog";
+import { DeleteConfirmDialog } from "@/components/dialogs/delete-confirm-dialog";
+import { useListingActions } from "@/lib/hooks/use-listing-actions";
 
 export default function VehiclesPage() {
   const router = useRouter();
@@ -32,10 +26,27 @@ export default function VehiclesPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState("");
-  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // filters come from zustand store (same as MerchantFilters pattern)
   const { subCategory, status, city } = useVehicleFilterStore();
+  const {
+    deleteId,
+    openDeleteDialog,
+    closeDeleteDialog,
+    handleDelete,
+    isDeleting,
+    statusUpdateData,
+    openStatusDialog,
+    closeStatusDialog,
+    handleUpdateStatus,
+    isUpdatingStatus,
+  } = useListingActions({
+    category: "vehicle",
+    successMessages: {
+      delete: "Vehicle listing deleted successfully",
+      updateStatus: "Vehicle status updated successfully",
+    },
+  });
 
   const { data, isLoading } = useAdminListings({
     category: "vehicles",
@@ -47,19 +58,7 @@ export default function VehiclesPage() {
     city: city || undefined,
   });
 
-  const deleteMutation = useDeleteAdminListing();
-
   // ── handlers ──
-  const handleDelete = async () => {
-    if (!deleteId) return;
-    try {
-      await deleteMutation.mutateAsync(deleteId);
-      toast.success("Vehicle listing deleted successfully");
-      setDeleteId(null);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete listing");
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -100,9 +99,9 @@ export default function VehiclesPage() {
       <AdminTable
         data={data?.items || []}
         columns={getVehicleColumns({
-          onView: (id) => router.push(`/listings/${id}`),
-          onEdit: (id) => router.push(`/admin/vehicles/edit/${id}`),
-          onDelete: (id) => setDeleteId(id),
+          onEdit: (id) => router.push(`/vehicles/edit/${id}`),
+          onDelete: openDeleteDialog,
+          onUpdateStatus: openStatusDialog,
         })}
         isLoading={isLoading}
         pagination={{
@@ -116,27 +115,25 @@ export default function VehiclesPage() {
         rowClassName={(_, i) => (i % 2 === 1 ? "bg-gray-50" : "")}
       />
 
-      {/* Delete confirmation */}
-      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              vehicle listing.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Update Status Dialog */}
+      <UpdateStatusDialog
+        open={!!statusUpdateData}
+        onOpenChange={closeStatusDialog}
+        currentStatus={statusUpdateData?.currentStatus || ""}
+        onConfirm={handleUpdateStatus}
+        isLoading={isUpdatingStatus}
+        title="Update Vehicle Status"
+        description="Change the availability status of this vehicle listing"
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={!!deleteId}
+        onOpenChange={closeDeleteDialog}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        itemName="the vehicle listing"
+      />
     </div>
   );
 }

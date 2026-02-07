@@ -11,7 +11,7 @@ export default function AdminDashboard() {
       <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <p className="text-gray-600">Welcome to Costria Admin Panel</p>
-        <div>welcome {session?.user.name}</div>
+        <div>welcome {session?.user?.user?.name}</div>
       </div>
     </div>
   );

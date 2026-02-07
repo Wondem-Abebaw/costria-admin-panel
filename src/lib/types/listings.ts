@@ -170,6 +170,8 @@ export interface CreateListingRequest {
   contactName: string;
   contactPhone: string;
   images?: string[];
+
+  userId: string;
   attributes: ListingAttributes;
 }
 

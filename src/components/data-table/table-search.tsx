@@ -1,6 +1,6 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, RefreshCcw } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 
@@ -15,19 +15,20 @@ interface TableSearchProps {
 export function TableSearch({
   placeholder = "Search...",
   setDebouncedValue,
-  onRefresh,
   className,
   children,
 }: TableSearchProps) {
   const [value, setValue] = useState("");
 
-  // debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [value, setDebouncedValue]);
+  const handleSearch = () => {
+    setDebouncedValue(value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <div
@@ -37,42 +38,29 @@ export function TableSearch({
       )}
     >
       {/* Search Input */}
-      <div className="relative flex-1 min-w-[200px] max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+      <div className="relative flex-1 min-w-50 max-w-md">
         <Input
           placeholder={placeholder}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="pl-10"
+          onKeyDown={handleKeyDown}
+          className="pr-10"
         />
+
+        {/* Search submit suffix */}
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          onClick={handleSearch}
+          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 bg-gray-200"
+        >
+          <Search className="h-4 w-4 text-gray-500" />
+        </Button>
       </div>
 
-      {/* Refresh
-      {onRefresh && (
-        <Button variant="outline" size="sm" onClick={onRefresh}>
-          <RefreshCcw className="h-4 w-4" />
-        </Button>
-      )} */}
-
-      {/* Everything else: filters, buttons, exports — passed as children */}
+      {/* Everything else: filters, buttons, exports */}
       {children}
     </div>
-  );
-}
-
-// ──────────────────────────────────────────
-// HeaderCell  (small helper for column titles)
-// ──────────────────────────────────────────
-
-interface HeaderCellProps {
-  title: string;
-  className?: string;
-}
-
-export function HeaderCell({ title, className }: HeaderCellProps) {
-  return (
-    <span className={cn("font-semibold text-gray-700 text-sm", className)}>
-      {title}
-    </span>
   );
 }

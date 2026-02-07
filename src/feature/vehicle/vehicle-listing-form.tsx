@@ -275,8 +275,8 @@ export function VehicleListingForm({
       },
     };
 
-    // Add userId for admin mode
-    if (isAdmin && selectedUserId) {
+   
+    if (selectedUserId) {
       payload.userId = selectedUserId;
     }
 
@@ -293,7 +293,7 @@ export function VehicleListingForm({
       }
 
       reset();
-      router.push(isAdmin ? "/admin/vehicles" : "/account/listings");
+      // router.push("/vehicles");
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||

@@ -18,9 +18,11 @@ apiClient.interceptors.request.use(
     if (typeof window !== "undefined") {
       try {
         const session = await getSession();
+    
+       
         
-        if (session?.accessToken) {
-          config.headers.Authorization = `Bearer ${session.accessToken}`;
+        if (session.user.access_token) {
+          config.headers.Authorization = `Bearer ${session.user.access_token}`;
         }
       } catch (error) {
         console.warn("Failed to get session:", error);
@@ -37,11 +39,11 @@ apiClient.interceptors.response.use(
   async (error) => {
     const status = error.response?.status;
 
-    if (status === 401) {
-      if (typeof window !== "undefined") {
-        window.location.href = "/auth/login?error=session_expired";
-      }
-    }
+    // if (status === 401) {
+    //   if (typeof window !== "undefined") {
+    //     window.location.href = "/auth/login?error=session_expired";
+    //   }
+    // }
 
     return Promise.reject(error);
   }

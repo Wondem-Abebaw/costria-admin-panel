@@ -17,17 +17,12 @@ import {
 } from "@/components/ui/popover";
 import { SlidersHorizontal } from "lucide-react";
 import useVehicleFilterStore from "@/lib/store/vehicle-filter.store";
+import { ListingStatusOptions } from "@/lib/config/status-options";
 export const vehicleSubCategoryOptions = [
   { label: "Cars", value: "cars" },
   { label: "Trucks", value: "trucks" },
   { label: "Limousine", value: "limousine" },
   { label: "Vans", value: "vans" },
-];
-
-export const vehicleStatusOptions = [
-  { label: "Available", value: "available" },
-  { label: "Rented", value: "rented" },
-  { label: "Maintenance", value: "maintenance" },
 ];
 
 export const vehicleCityOptions = [
@@ -137,7 +132,7 @@ const VehicleFilters = () => {
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {vehicleStatusOptions.map((o) => (
+                  {ListingStatusOptions.map((o) => (
                     <SelectItem key={o.value} value={o.value}>
                       {o.label}
                     </SelectItem>

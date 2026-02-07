@@ -10,12 +10,13 @@ import {
 // import { Listing } from "@/lib/types/listings";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
-import { MoreVertical, Eye, Edit, Trash2 } from "lucide-react";
+import { MoreVertical, Eye, Edit, Trash2, Rotate3d } from "lucide-react";
 import { ColumnDef } from "@/components/data-table/data-table";
 import { HeaderCell } from "@/components/data-table/header-cell";
+import { Listing } from "@/lib/types/listings";
 
 interface ColumnActions {
-  onView: (id: string) => void;
+  onUpdateStatus: (id: string, currentStatus: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
@@ -143,9 +144,11 @@ export function getVehicleColumns(
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => actions.onView(row.id)}>
-              <Eye className="h-4 w-4 mr-2" />
-              View
+            <DropdownMenuItem
+              onClick={() => actions.onUpdateStatus(row.id, row.status)}
+            >
+              <Rotate3d className="h-4 w-4 mr-2" />
+              Change Status
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => actions.onEdit(row.id)}>
               <Edit className="h-4 w-4 mr-2" />

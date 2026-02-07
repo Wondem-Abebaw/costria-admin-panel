@@ -39,13 +39,13 @@ import {
 import { Button } from "@/components/ui/button";
 
 const navigation = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "Vehicles", href: "/admin/vehicles", icon: Car },
-  { name: "Residential", href: "/admin/residential", icon: Home },
-  { name: "Commercial", href: "/admin/commercial", icon: Building2 },
-  { name: "Equipment", href: "/admin/equipment", icon: Wrench },
-  { name: "Events", href: "/admin/events", icon: Sparkles },
-  { name: "Users", href: "/admin/users", icon: Users },
+  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Vehicles", href: "/vehicles", icon: Car },
+  { name: "Residential", href: "/residential", icon: Home },
+  { name: "Commercial", href: "/commercial", icon: Building2 },
+  { name: "Construction Equipments", href: "/construction", icon: Wrench },
+  { name: "Events", href: "/events", icon: Sparkles },
+  { name: "Users", href: "/users", icon: Users },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

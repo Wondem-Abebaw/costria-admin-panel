@@ -89,7 +89,7 @@ export const adminApi = {
     },
 
     delete: async (id: string): Promise<void> => {
-      await apiClient.delete(`/admin/listings/${id}`);
+      await apiClient.delete(`/admin-listings/${id}`);
     },
 
     getStats: async (): Promise<AdminStats> => {

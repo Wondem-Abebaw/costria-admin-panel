@@ -31,7 +31,7 @@ export default function EditVehiclePage({ id }: Props) {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin/vehicles">
+        <Link href="/vehicles">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
