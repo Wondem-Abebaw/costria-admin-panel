@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCreateAdmin } from "@/lib/hooks/use-admin";
+import { useCreateAdmin } from "@/lib/hooks/use-admin-listings";
 import { UserRole } from "@/lib/types/admin";
 import {
   Dialog,

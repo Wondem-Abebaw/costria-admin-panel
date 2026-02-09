@@ -2,7 +2,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosRequestConfig } from "axios";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 import EventEmitter from "events";
 import { toast } from "sonner";
@@ -16,21 +16,22 @@ interface Header extends AxiosRequestConfig {
     Authorization: string;
   };
 }
-// axios.interceptors.response.use(
-//   (response) => {
-//     const newToken = response.headers["x_new_token"];
-//     if (newToken) {
-//       sessionEventEmitter.emit("sessionUpdated", newToken);
-//     }
-//     return response;
-//   },
-//   (error) => {
-//     if (error.response.status === 403 || error.response.status === 401) {
-//       signOut();
-//     }
-//     return Promise.reject(error);
-//   },
-// );
+axios.interceptors.response.use(
+  (response) => response,
+  // {
+  //   const newToken = response.headers["x_new_token"];
+  //   if (newToken) {
+  //     sessionEventEmitter.emit("sessionUpdated", newToken);
+  //   }
+  //   return response;
+  // },
+  (error) => {
+    if (error.response.status === 403 || error.response.status === 401) {
+      signOut();
+    }
+    return Promise.reject(error);
+  },
+);
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/";
 export const useFetchData = (
   queryKey: (string | number | boolean | undefined | null | any)[],
@@ -38,7 +39,9 @@ export const useFetchData = (
   headers?: Header["headers"] | any,
   enabled?: boolean,
 ) => {
+  const { status } = useSession();
   const header = useGetHeaders({});
+
   return useQuery({
     queryKey: queryKey,
     queryFn: async () => {
@@ -60,6 +63,6 @@ export const useFetchData = (
     placeholderData: (previousData) => previousData,
     refetchOnWindowFocus: false,
     retry: true,
-    enabled: enabled,
+    enabled: status === "authenticated" && enabled !== false,
   });
 };

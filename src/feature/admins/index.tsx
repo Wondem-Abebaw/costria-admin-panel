@@ -1,66 +1,61 @@
-// app/admin/users/page.tsx
+// app/admin/admins/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  useUsers,
-  useToggleUserStatus,
-  useDeleteUser,
-} from "@/lib/hooks/use-users";
-import useUsersFilterStore from "@/lib/store/users-filter.store";
+  useAdmins,
+  useToggleAdminStatus,
+  useDeleteAdmin,
+} from "@/lib/hooks/use-admins";
+
 import { Plus } from "lucide-react";
 import { TableSearch } from "@/components/data-table/table-search";
 import { AdminTable } from "@/components/data-table/data-table";
-import UsersFilters from "./users-filter";
-import { getUsersColumns } from "./columns";
+import { getAdminsColumns } from "./columns";
 
 import { toast } from "sonner";
 import ModalButton from "@/components/modal-button";
-import { UserFormModalContent } from "./user-form-modal";
+import { AdminFormModalContent } from "./admin-form-modal";
 
-export default function UsersPage() {
+export default function AdminsPage() {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState("");
 
-  // filters come from zustand store
-  const { status } = useUsersFilterStore();
-
-  const { data, isLoading } = useUsers({
+  const { data, isLoading } = useAdmins({
     page,
     limit,
     search: search || undefined,
-    status: status || undefined,
   });
-  // console.log("🚀 ~ UsersPage ~ data:", data);
+  // console.log("🚀 ~ AdminsPage ~ data:", data);
 
-  const { toggleUserStatusAsync, isToggling } = useToggleUserStatus();
-  const { deleteUserAsync, isDeleting } = useDeleteUser();
+  const { toggleAdminStatusAsync, isToggling } = useToggleAdminStatus();
+  const { deleteAdminAsync, isDeleting } = useDeleteAdmin();
 
   const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
     try {
-      await toggleUserStatusAsync(userId);
+      await toggleAdminStatusAsync(userId);
       toast.success(
-        `User ${currentStatus ? "disabled" : "enabled"} successfully`,
+        `Admin ${currentStatus ? "disabled" : "enabled"} successfully`,
       );
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "Failed to toggle user status",
+        error?.response?.data?.message || "Failed to toggle admin status",
       );
     }
   };
 
   const handleDelete = async (userId: string) => {
     try {
-      await deleteUserAsync(userId);
-      toast.success("User deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      await deleteAdminAsync(userId);
+      toast.success("Admin deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete user");
+      toast.error(error?.response?.data?.message || "Failed to delete admin");
     }
   };
 
@@ -69,31 +64,32 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Users Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Admins Management
+          </h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Manage all customer accounts
+            Manage all admin accounts
           </p>
         </div>
       </div>
 
       {/* Search bar — filters & create button passed as children */}
       <TableSearch
-        placeholder="Search users..."
+        placeholder="Search admins..."
         setDebouncedValue={(val) => {
           setPage(1);
           setSearch(val);
         }}
-        onRefresh={() => queryClient.invalidateQueries({ queryKey: ["users"] })}
+        onRefresh={() =>
+          queryClient.invalidateQueries({ queryKey: ["admins"] })
+        }
       >
         <div className="flex space-x-2 items-center justify-center">
-          {/* custom filter popover */}
-          <UsersFilters />
-
           {/* create button using ModalButton */}
           <ModalButton
-            label="Add User"
+            label="Add Admin"
             icon={<Plus className="mr-2 h-4 w-4" />}
-            view={<UserFormModalContent mode="create" />}
+            view={<AdminFormModalContent mode="create" />}
             customSize="500px"
           />
         </div>
@@ -102,7 +98,7 @@ export default function UsersPage() {
       {/* Table — no filters prop, just data + columns + pagination */}
       <AdminTable
         data={data?.data || []}
-        columns={getUsersColumns({
+        columns={getAdminsColumns({
           onToggleStatus: handleToggleStatus,
           onDelete: handleDelete,
         })}
@@ -114,7 +110,7 @@ export default function UsersPage() {
           onChange: setPage,
           onPageSizeChange: setLimit,
         }}
-        emptyMessage="No users found"
+        emptyMessage="No admins found"
         rowClassName={(_, i) => (i % 2 === 1 ? "bg-gray-50" : "")}
       />
     </div>

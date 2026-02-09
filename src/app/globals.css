@@ -29,14 +29,23 @@
   --chart-4: #ebcb49; /* oklch(0.828 0.189 84.429) */
   --chart-5: #f0b34e; /* oklch(0.769 0.188 70.08) */
   --radius: 0.625rem;
-  --sidebar: #fbfbfb; /* oklch(0.985 0 0) */
-  --sidebar-foreground: #232323; /* oklch(0.145 0 0) */
-  --sidebar-primary: #5a4fcf; /* Blue-600 equivalent */
-  --sidebar-primary-foreground: #ffffff; /* Pure White for contrast */
-  --sidebar-accent: #f7f7f7; /* oklch(0.97 0 0) */
-  --sidebar-accent-foreground: #323232; /* oklch(0.205 0 0) */
-  --sidebar-border: #ebebeb; /* oklch(0.922 0 0) */
-  --sidebar-ring: #b4b4b4; /* oklch(0.708 0 0) */
+  --sidebar: #f3f2fd; /* very light primary tint */
+  --sidebar-foreground: #2a2a3a; /* cool dark for readability */
+  --sidebar-primary: #5a4fcf; /* same as primary */
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ebe9fb; /* hover / item background */
+  --sidebar-accent-foreground: #3a36a3; /* darker primary for text */
+  --sidebar-border: #e2e0f4; /* soft blue-gray border */
+  --sidebar-ring: #9a95e5; /* muted primary for focus */
+  /* --sidebar: #1a1638;                
+  --sidebar-foreground: #edecff; 
+  --sidebar-primary: #7b6fe6;        
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2d2663;       
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #26214d;       
+  --sidebar-ring: #5a4fcf; */
+  
 }
 
 @theme inline {

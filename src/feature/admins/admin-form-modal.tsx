@@ -1,4 +1,4 @@
-// app/admin/users/user-form-modal-content.tsx
+// app/admin/users/admin-form-modal-content.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -15,9 +15,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useCreateUser, useUpdateUser } from "@/lib/hooks/use-users";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/lib/hooks/use-modal";
+import { useCreateAdmin, useUpdateAdmin } from "@/lib/hooks/use-admins";
 
 // Zod Validation Schema
 const userSchema = z.object({
@@ -30,9 +31,9 @@ const userSchema = z.object({
   phone: z.string().min(1, "Phone number is required"),
 });
 
-type UserFormData = z.infer<typeof userSchema>;
+type AdminFormData = z.infer<typeof userSchema>;
 
-interface User {
+interface Admin {
   id: string;
   name: string;
   email?: string;
@@ -40,22 +41,22 @@ interface User {
 }
 
 interface Props {
-  user?: User | null;
+  admin?: Admin | null;
   mode: "create" | "edit";
 }
 
-export function UserFormModalContent({ user, mode }: Props) {
+export function AdminFormModalContent({ admin, mode }: Props) {
   const queryClient = useQueryClient();
   const { closeModal } = useModal();
-  const { createUserAsync, isCreating } = useCreateUser();
-  const { updateUserAsync, isUpdating } = useUpdateUser();
+  const { createAdminAsync, isCreating } = useCreateAdmin();
+  const { updateAdminAsync, isUpdating } = useUpdateAdmin();
 
-  const form = useForm<UserFormData>({
+  const form = useForm<AdminFormData>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      name: user?.name || "",
-      email: user?.email || "",
-      phone: user?.phone || "",
+      name: admin?.name || "",
+      email: admin?.email || "",
+      phone: admin?.phone || "",
     },
   });
 
@@ -69,14 +70,14 @@ export function UserFormModalContent({ user, mode }: Props) {
 
   // Populate form when editing
   useEffect(() => {
-    if (mode === "edit" && user) {
-      setValue("name", user.name || "");
-      setValue("email", user.email || "");
-      setValue("phone", user.phone || "");
+    if (mode === "edit" && admin) {
+      setValue("name", admin.name || "");
+      setValue("email", admin.email || "");
+      setValue("phone", admin.phone || "");
     }
-  }, [mode, user, setValue]);
+  }, [mode, admin, setValue]);
 
-  const onSubmit = async (data: UserFormData) => {
+  const onSubmit = async (data: AdminFormData) => {
     try {
       const payload = {
         name: data.name,
@@ -85,11 +86,11 @@ export function UserFormModalContent({ user, mode }: Props) {
       };
 
       if (mode === "create") {
-        await createUserAsync(payload);
-        toast.success("User created successfully!");
-      } else if (user) {
-        await updateUserAsync({ id: user.id, data: payload });
-        toast.success("User updated successfully!");
+        await createAdminAsync(payload);
+        toast.success("Admin created successfully!");
+      } else if (admin) {
+        await updateAdminAsync({ id: admin.id, data: payload });
+        toast.success("Admin updated successfully!");
       }
 
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -98,7 +99,7 @@ export function UserFormModalContent({ user, mode }: Props) {
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||
-          `Failed to ${mode === "create" ? "create" : "update"} user`,
+          `Failed to ${mode === "create" ? "create" : "update"} admin`,
       );
     }
   };
@@ -109,12 +110,12 @@ export function UserFormModalContent({ user, mode }: Props) {
     <>
       <DialogHeader>
         <DialogTitle>
-          {mode === "create" ? "Add New User" : "Edit User"}
+          {mode === "create" ? "Add New Admin" : "Edit Admin"}
         </DialogTitle>
         <DialogDescription>
           {mode === "create"
-            ? "Create a new customer/user account"
-            : "Update user information"}
+            ? "Create a new customer/admin account"
+            : "Update admin information"}
         </DialogDescription>
       </DialogHeader>
 
@@ -149,7 +150,7 @@ export function UserFormModalContent({ user, mode }: Props) {
             <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
           )}
           <p className="text-xs text-gray-500 mt-1">
-            User can use email or phone to login
+            Admin can use email or phone to login
           </p>
         </div>
 
@@ -170,7 +171,7 @@ export function UserFormModalContent({ user, mode }: Props) {
           )}
           {mode === "create" && (
             <p className="text-xs text-gray-500 mt-1">
-              User will receive login credentials via SMS
+              Admin will receive login credentials via SMS
             </p>
           )}
         </div>
@@ -192,9 +193,9 @@ export function UserFormModalContent({ user, mode }: Props) {
                 {mode === "create" ? "Creating..." : "Updating..."}
               </>
             ) : mode === "create" ? (
-              "Create User"
+              "Create Admin"
             ) : (
-              "Update User"
+              "Update Admin"
             )}
           </Button>
         </div>

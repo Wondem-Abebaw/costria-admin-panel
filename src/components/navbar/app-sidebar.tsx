@@ -46,6 +46,7 @@ const navigation = [
   { name: "Construction Equipments", href: "/construction", icon: Wrench },
   { name: "Events", href: "/events", icon: Sparkles },
   { name: "Users", href: "/users", icon: Users },
+  { name: "Admins", href: "/admins", icon: Users },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

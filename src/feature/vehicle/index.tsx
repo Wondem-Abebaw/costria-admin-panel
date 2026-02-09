@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAdminListings, useDeleteAdminListing } from "@/lib/hooks/use-admin";
+import {
+  useAdminListings,
+  useDeleteAdminListing,
+} from "@/lib/hooks/use-admin-listings";
 
 import useVehicleFilterStore from "@/lib/store/vehicle-filter.store";
 import { Button } from "@/components/ui/button";

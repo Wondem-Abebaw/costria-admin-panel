@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useListings } from "./use-listings";
-import { useDeleteAdminListing } from "./use-admin";
+import { useDeleteAdminListing } from "./use-admin-listings";
 
 interface UseListingActionsOptions {
   category: string;

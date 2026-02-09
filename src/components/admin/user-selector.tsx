@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useCustomers } from "@/lib/hooks/use-admin";
+import { useCustomers } from "@/lib/hooks/use-admin-listings";
 import { User } from "@/lib/types/admin";
 import {
   Command,

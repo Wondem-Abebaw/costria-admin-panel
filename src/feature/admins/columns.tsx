@@ -1,4 +1,4 @@
-// app/admin/users/columns.tsx
+// app/admin/admins/columns.tsx
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,7 @@ import {
   MoreVertical,
   Edit,
   Trash2,
-  User as UserIcon,
+  UserIcon,
   Power,
   Edit3,
   LockIcon,
@@ -24,7 +24,7 @@ import { ColumnDef } from "@/components/data-table/data-table";
 import { HeaderCell } from "@/components/data-table/header-cell";
 
 import { useModal } from "@/lib/hooks/use-modal";
-import { UserFormModalContent } from "./user-form-modal";
+
 import { ConfirmationModalContent } from "@/components/confirmation-modal-content";
 import ModalButton from "@/components/modal-button";
 
@@ -33,15 +33,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AdminFormModalContent } from "./admin-form-modal";
 
-export interface User {
+export interface Admin {
   id: string;
   name: string;
   email?: string;
   phone: string;
   isActive: boolean;
   createdAt: string;
-  listingsCount?: number;
 }
 
 interface ColumnActions {
@@ -49,63 +49,25 @@ interface ColumnActions {
   onDelete: (id: string) => Promise<void>;
 }
 
-function DeleteUserAction({
-  user,
-  onDelete,
-}: {
-  user: User;
-  onDelete: (id: string) => Promise<void>;
-}) {
-  const { openModal } = useModal();
-
-  const handleDelete = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    openModal({
-      view: (
-        <ConfirmationModalContent
-          title="Delete User"
-          description={`Are you sure you want to delete ${user.name}? This action cannot be undone and will permanently remove all user data and listings.`}
-          onConfirm={() => onDelete(user.id)}
-          type="danger"
-          confirmText="Delete"
-        />
-      ),
-      customSize: "450px",
-    });
-  };
-
-  return (
-    <DropdownMenuItem
-      onClick={handleDelete}
-      className="text-red-600 focus:text-red-600"
-    >
-      <Trash2 className="h-4 w-4 mr-2" />
-      Delete
-    </DropdownMenuItem>
-  );
-}
-
 // Status switch component with modal
-function StatusSwitch({ user }: { user: User }) {
+function StatusSwitch({ admin }: { admin: Admin }) {
   return (
     <div className="flex items-center gap-2">
       <Badge
-        variant={user.isActive ? "default" : "secondary"}
+        variant={admin.isActive ? "default" : "secondary"}
         className="capitalize"
       >
-        {user.isActive ? "Active" : "Disabled"}
+        {admin.isActive ? "Active" : "Disabled"}
       </Badge>
     </div>
   );
 }
 
-export function getUsersColumns(actions: ColumnActions): ColumnDef<User>[] {
+export function getAdminsColumns(actions: ColumnActions): ColumnDef<Admin>[] {
   return [
     {
-      title: <HeaderCell title="User" />,
-      key: "user",
+      title: <HeaderCell title="Admin" />,
+      key: "admin",
       width: 250,
       render: (_, row) => (
         <div className="flex items-center gap-3">
@@ -129,23 +91,16 @@ export function getUsersColumns(actions: ColumnActions): ColumnDef<User>[] {
       ),
     },
     {
-      title: <HeaderCell title="Listings" />,
-      dataIndex: "listingsCount",
-      key: "listingsCount",
+      title: <HeaderCell title="Role" />,
+      dataIndex: "role",
+      key: "role",
       width: 100,
-      render: (value: number) => (
-        <div className="text-center">
-          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-sm font-medium text-gray-900">
-            {value || 0}
-          </span>
-        </div>
-      ),
     },
     {
       title: <HeaderCell title="Statuss" />,
       key: "status",
       width: 120,
-      render: (_, row) => <StatusSwitch user={row} />,
+      render: (_, row) => <StatusSwitch admin={row} />,
     },
     {
       title: <HeaderCell title="Joined" />,
@@ -170,7 +125,7 @@ export function getUsersColumns(actions: ColumnActions): ColumnDef<User>[] {
               <ModalButton
                 variant="ghost"
                 icon={<Edit3 className=" h-4 w-4" />}
-                view={<UserFormModalContent user={row} mode="edit" />}
+                view={<AdminFormModalContent admin={row} mode="edit" />}
                 customSize="500px"
               />
             </TooltipTrigger>
@@ -185,7 +140,7 @@ export function getUsersColumns(actions: ColumnActions): ColumnDef<User>[] {
                 icon={<LockIcon className=" h-4 w-4" />}
                 view={
                   <ConfirmationModalContent
-                    title={row.isActive ? "Disable User" : "Enable User"}
+                    title={row.isActive ? "Disable Admin" : "Enable Admin"}
                     description={
                       row.isActive
                         ? `Are you sure you want to disable ${row.name}? They will not be able to access their account.`
@@ -202,7 +157,7 @@ export function getUsersColumns(actions: ColumnActions): ColumnDef<User>[] {
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p>{row.isActive ? "Disable User" : "Enable User"}</p>
+              <p>{row.isActive ? "Disable Admin" : "Enable Admin"}</p>
             </TooltipContent>
           </Tooltip>
           <Tooltip>
@@ -214,8 +169,8 @@ export function getUsersColumns(actions: ColumnActions): ColumnDef<User>[] {
                 }
                 view={
                   <ConfirmationModalContent
-                    title="Delete User"
-                    description={`Are you sure you want to delete ${row.name}? This action cannot be undone and will permanently remove all user data and listings.`}
+                    title="Delete Admin"
+                    description={`Are you sure you want to delete ${row.name}? This action cannot be undone and will permanently remove all admin data and listings.`}
                     onConfirm={() => actions.onDelete(row.id)}
                     type="danger"
                     confirmText="Delete"

@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAdminListings } from "@/lib/hooks/use-admin";
+import { useAdminListings } from "@/lib/hooks/use-admin-listings";
 
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";

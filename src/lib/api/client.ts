@@ -39,11 +39,11 @@ apiClient.interceptors.response.use(
   async (error) => {
     const status = error.response?.status;
 
-    // if (status === 401) {
-    //   if (typeof window !== "undefined") {
-    //     window.location.href = "/auth/login?error=session_expired";
-    //   }
-    // }
+    if (status === 401) {
+      if (typeof window !== "undefined") {
+        window.location.href = "/auth/signin?error=session_expired";
+      }
+    }
 
     return Promise.reject(error);
   }

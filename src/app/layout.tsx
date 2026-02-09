@@ -8,6 +8,8 @@ import { Toaster } from "sonner";
 import NextProgress from "@/components/next-progress";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { SessionProvider } from "@/lib/providers/session-provider";
+import GlobalModal from "@/components/ui/global-modal";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,9 +34,14 @@ export default function RootLayout({
 
         <SessionProvider>
           <QueryProvider>
-            <main className="flex-1">{children}</main>
+            <TooltipProvider>
+              <main className="flex-1">{children}</main>
+            </TooltipProvider>
+
+            <GlobalModal />
           </QueryProvider>
         </SessionProvider>
+
         {/* </ErrorBoundary> */}
       </body>
     </html>

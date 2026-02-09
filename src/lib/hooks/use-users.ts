@@ -23,7 +23,7 @@ interface UsersResponse {
 interface UsersParams {
   page?: number;
   limit?: number;
-  query?: string;
+  search?: string;
   status?: string;
 }
 
@@ -55,7 +55,7 @@ export function useUser(id: string) {
   return useQuery<User>({
     queryKey: ["user", id],
     queryFn: async () => {
-      const response = await apiClient.get(`/admin/users/${id}`);
+      const response = await apiClient.get(`/users/${id}`);
       return response.data;
     },
     enabled: !!id,
@@ -66,7 +66,7 @@ export function useUser(id: string) {
 export function useCreateUser() {
   const mutation = useMutation({
     mutationFn: async (data: CreateUserData) => {
-      const response = await apiClient.post("/admin/users", data);
+      const response = await apiClient.post("/auth/register", data);
       return response.data;
     },
   });
@@ -102,7 +102,7 @@ export function useUpdateUser() {
 export function useToggleUserStatus() {
   const mutation = useMutation({
     mutationFn: async (userId: string) => {
-      const response = await apiClient.patch(`/admin/users/${userId}/toggle-status`);
+      const response = await apiClient.patch(`/users/${userId}/change-status`);
       return response.data;
     },
   });
